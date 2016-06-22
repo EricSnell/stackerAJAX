@@ -37,6 +37,13 @@ var showQuestion = function(question) {
 	return result;
 };
 
+var showAnswer = function(answer){
+	// clones result answer code
+	var answerResult = $('.templates .answer').clone();
+
+
+}
+
 
 // this function takes the results object from StackOverflow
 // and returns the number of results and tags to be appended to DOM
