@@ -1,3 +1,9 @@
+// Users can submit a topic they want to find top answerers for on Stack Overflow.
+// The app makes an AJAX call to the appropriate endpoint on the StackExchange API (there are a few hints below)
+// The DOM is updated with information about top answerers (if any) after the response is returned.
+
+
+
 // this function takes the question object returned by the StackOverflow request
 // and returns new result to be appended to DOM
 var showQuestion = function(question) {
