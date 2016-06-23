@@ -7,12 +7,12 @@ $(document).ready(function() {
         var tags = $(this).find("input[name='tags']").val();
         getUnanswered(tags);
     });
+
     $('.inspiration-getter').submit(function(event) {
     	event.preventDefault();
     	$('.results').html('');
     	var tags = $(this).find("input[name='answers']").val();
         getAnswers(tags);
-        console.log(query);
     });
 
     // Users can submit a topic they want to find top answerers for on Stack Overflow.
@@ -58,8 +58,21 @@ $(document).ready(function() {
         // clones result answer code
         var answerResult = $('.templates .answer').clone();
 
+       	var score = answerResult.find('.score-text');
+       	score.text(answer.score);
 
-    }
+       	var postCount = answerResult.find('.post-count');
+       	postCount.text(answer.post_count);
+       	
+       	var profileImage = answerResult.find('.profile-image');
+   		var answeredBy = answerResult.find('.answered-by');
+
+   		var reputation = answerResult.find('.users-rep');
+        answeredBy.html('<img src="' + answer.user.profile_image + '">' + '<br>' + 'Username: ' + '<a href="' + answer.user.link + '">' + answer.user.display_name + '</a>' + '<br>' + 'Reputation: ' + answer.user.reputation);
+
+        return answerResult;
+
+    };
 
 
     // this function takes the results object from StackOverflow
@@ -94,6 +107,7 @@ $(document).ready(function() {
             dataType: "jsonp", //use jsonp to avoid cross origin issues
             type: "GET",
         })
+
             .done(function(result) { //this waits for the ajax to return with a succesful promise object
                 var searchResults = showSearchResults(request.tagged, result.items.length);
 
@@ -114,7 +128,8 @@ $(document).ready(function() {
     var getAnswers = function(tags) {
     		var query = $('#search').val();
     		console.log(query);
-    		var url = "http://api.stackexchange./2.2/tags/" + query + "/top-answerers/all_time";
+    		var url = "http://api.stackexchange.com/2.2/tags/" + query + "/top-answerers/all_time";
+
         var request = {
             tagged: tags,
             site: 'stackoverflow',
@@ -130,17 +145,30 @@ $(document).ready(function() {
         })
 
         .done(function(result) {
-            var answerResults = showSearchResults(request.tagged, result.items.length);
+            var answerResults = showSearchResults(tags, result.items.length);
             $('.search-results').html(answerResults);
             $.each(result.items, function(i, item) {
                 var answer = showAnswer(item);
                 $('.results').append(answer);
-                console.log(query);
             });
         })
-    }
+        .fail(function(jqXHR, error) { //this waits for the ajax to return with an error promise object
+                var errorElem = showError(error);
+                $('.search-results').append(errorElem);
+            });
+    };
+
+
+    // check api docs
+    // they will tell you what the response will look like, for every case
+    // generally, it should remain consistent
+
+    // access user rep value:
+    // result.items[0].user.reputation    ---set '0' to 'i' in a loop
 
     // {
+    //	[
+    //		{
     //     "user": {
     //         "reputation": 415327,
     //         "user_id": 13249,
